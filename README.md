@@ -12,21 +12,25 @@ Example of expected configuration file:
 
 ```json
 {
-  "sleep": 2,
-  "working_directory": "/var/www/site",
-  "targets": [
-    {
-      "src": ["public/script1.js", "public/script2.js"],
-      "test": "casperjs --disk-cache=true test /var/www/site/t/test.js"
-    },
-    {
-      "src": ["lib/Object.pm"],
-      "test": "prove /var/www/site/t/Object.t"
-    },
-  ]
+  "testme": {
+    "sleep": 2,
+    "working_directory": "/var/www/site",
+    "targets": [
+      {
+        "src": ["public/script1.js", "public/script2.js"],
+        "test": "casperjs --disk-cache=true test /var/www/site/t/test.js"
+      },
+      {
+        "src": ["lib/Object.pm"],
+        "test": "prove /var/www/site/t/Object.t"
+      }
+    ]
+  }
 }
 ```
-This configuration means: if file `public/script1.js` or `public/script2.js` located in `/var/www/site` has changed, then command: `casperjs --disk-cache=true test /var/www/site/t/test.js` will be executed. Similarly for the perl scripts above. This check will repeat in `2` seconds later.
+If you already have configuration file in JSON for your application, you can add `testme`-property to the first level of it to store all configs in one place.
+
+Above configuration means: if file `public/script1.js` or `public/script2.js` located in `/var/www/site` has changed, then command: `casperjs --disk-cache=true test /var/www/site/t/test.js` will be executed. Similarly for the perl scripts below. This check will repeat in `2` seconds later.
 
 ### Configuration file options:
  - `sleep` - period of time in seconds before next checking iteration. Default is: 1.

@@ -1,14 +1,16 @@
 {
-  "sleep": 1,
-  "working_directory": "/var/www/site",
-  "targets": [
-    {
-      "src": ["public/script1.js", "public/script2.js"],
-      "test": "casperjs --disk-cache=true test /var/www/site/t/test.js"
-    },
-    {
-      "src": ["lib/Object.pm"],
-      "test": "prove /var/www/site/t/Object.t"
-    },
-  ]
+  "testme": {
+    "sleep": 1,
+    "working_directory": "/var/www/site",
+    "targets": [
+      {
+        "src": ["public/script1.js", "public/script2.js"],
+        "test": "casperjs --disk-cache=true test /var/www/site/t/test.js"
+      },
+      {
+        "src": ["lib/Object.pm"],
+        "test": "prove /var/www/site/t/Object.t"
+      }
+    ]
+  }
 }

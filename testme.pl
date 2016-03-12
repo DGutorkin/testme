@@ -8,7 +8,7 @@ use JSON qw//;
 use File::Slurp qw/read_file/;
 use Time::HiRes qw/sleep/;
 
-use Data::Printer;
+my $CFG_PROPERTY_NAME = 'testme';
 my %stats;
 
 my $config = 'testme.json';
@@ -22,7 +22,12 @@ unless (-e $config) {
 }
 
 my $json_cfg = read_file($config) ;
-my $data =  JSON->new->decode($json_cfg);
+my $parsed_json =  JSON->new->decode($json_cfg);
+
+my $data = $parsed_json->{$CFG_PROPERTY_NAME} or
+  die "Coudn't find property $CFG_PROPERTY_NAME in specified configuration file";
+
+my $interval = $data->{sleep} || 1;
 
 say "Watching for $data->{working_directory}"
   if $data->{working_directory};
@@ -31,7 +36,7 @@ while(1) {
   foreach my $target (@{$data->{targets}}) {
     test($target);
   }
-  sleep $data->{sleep};
+  sleep $interval;
 }
 
 sub test {
@@ -39,10 +44,8 @@ sub test {
   foreach my $src (@{$target->{src}}) {
     my $fn = "$data->{working_directory}/$src";
     my $mtime = stat($fn)->[9];
-    if (exists $stats{$fn}) {
-      if ($stats{$fn} != $mtime) {
-        system ($target->{test});
-      }
+    if (exists $stats{$fn} && $stats{$fn} != $mtime) {
+      system ($target->{test});
     }
     $stats{$fn} = $mtime;
   }
