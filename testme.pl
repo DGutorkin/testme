@@ -34,20 +34,34 @@ say "Watching for $data->{working_directory}"
 
 while(1) {
   foreach my $target (@{$data->{targets}}) {
-    test($target);
+    foreach my $src (@{$target->{src}}) {
+      my $absolute_src = "$data->{working_directory}/$src";
+      if (-d $absolute_src) {
+        opendir(DH, $absolute_src );
+        foreach my $file (readdir(DH)) {
+          next if($file =~ /^\.+$/);
+          test("$absolute_src/$file", $target->{test});
+        }
+        readdir(DH);
+      } else {
+        test($absolute_src, $target->{test});
+      }
+    }
   }
   sleep $interval;
 }
 
-sub test {
+sub check_file {
   my $target = shift;
-  foreach my $src (@{$target->{src}}) {
-    my $fn = "$data->{working_directory}/$src";
-    my $mtime = stat($fn)->[9];
-    if (exists $stats{$fn} && $stats{$fn} != $mtime) {
-      system ($target->{test});
-    }
-    $stats{$fn} = $mtime;
+
+}
+
+sub test {
+  my ($fn, $test) = @_;
+  my $mtime = stat($fn)->[9];
+  if (exists $stats{$fn} && $stats{$fn} != $mtime) {
+    system ($test);
   }
+  $stats{$fn} = $mtime;
 }
 1;
